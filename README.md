@@ -126,17 +126,11 @@ Feel free to:
 
 ---
 
-## 👤 Author
+## License
+This sample is licensed under the terms of the MIT License. Please see the LICENSE file for full details.
 
-Maintained by: *Naveen Kumar T*
-
----
-
-## ⭐ Tips
-
-* Use Postman folders to quickly navigate APIs
-* Leverage environment variables for multi-environment testing
-* Keep tokens secure and avoid committing secrets
+## Written by
+Naveen Kumar Thalaivirichan, Developer Advocate and Support
 
 ---
 
