@@ -37,20 +37,6 @@ All endpoints follow a consistent naming convention using:
 * **Update** – Modify existing resources
 * **Delete / Remove** – Delete or detach resources
 * **Batch** – Bulk operations
-
-### Coverage
-
-| | Count |
-| --- | --- |
-| Documented API Reference operations | **155** |
-| Extra request preserved for backward compatibility (not in the current API Reference) | 1 |
-| **Total requests** | **156** |
-| Requests with a full description (endpoint, auth, scopes, headers, params, body schema, status codes) | 156 |
-| Requests with a saved example response | 154 |
-
-Breakdown by base path: 135 x `buildingconnected/v2`, 8 x `buildingconnected/v3`, 13 x `tradetapp/v2`.
-Methods: 71 GET, 39 POST, 24 PATCH, 21 DELETE, 1 PUT.
-
 ---
 
 ## 🚀 Getting Started
@@ -88,52 +74,6 @@ TradeTapp requests include an optional, pre-disabled `general-contractor-company
 
 * Fill in path variables per request via the **Path Variables** table (e.g. `bidPackageId`)
 * Query parameters ship **disabled** — enable only the ones you need
-
----
-
-## 📂 Collection Structure
-
-The collection is organized into the following folders, each containing logically grouped endpoints for better navigation and usability:
-
-```
-Bid Package Event History (Beta)      1
-Bid Package Stats (Beta)              2
-Bid Packages                          8
-  Bid Leveling (New)                  5
-  Other Cost Questions (New)          4
-  Other Cost Responses (New)          5
-Bidding Stats (Beta)                  2
-Bids                                  8
-  Plugs (New)                         6
-  Highlights (New)                    6
-  Notes (New)                         6
-Contacts                              3
-Certification                         2
-Invites                              14
-Offices                               2
-Opportunity-Project Pairs             4
-Opportunities                         7
-Preferred Contacts (Beta)             1
-Primary Contacts (Beta)               1
-Project Bid Forms                    11
-Project Team Members                  6
-  Deprecated (v2)                     4
-Projects
-  NDA                                 4
-  Cost Items                          7
-  BC Projects                         5
-  BC Projects - Deprecated (v2)       4
-  Sealed Bidding (New)                1
-Scope-Specific Bid Forms             11
-Users                                 3
-TradeTapp APIs
-  Users                               1
-  Financials                          2
-  Qualifications                      4
-  Flags                               6
-                                   ----
-                                    156
-```
 
 ---
 
