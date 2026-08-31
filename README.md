@@ -4,10 +4,10 @@ This repository contains a comprehensive Postman collection for the **BuildingCo
 
 <https://aps.autodesk.com/en/docs/buildingconnected/v2/reference/http/>
 
-| File | Purpose |
-| ---- | ------- |
-| `Building Connected APIs v1.4.0.postman_collection.json` | The collection (156 requests) |
-| `Building Connected Environment v1.4.0.postman_environment.json` | Environment with every variable the collection references |
+| File |
+| ---- | 
+| `Building Connected APIs v1.4.0.postman_collection.json` | 
+| `Building Connected Environment v1.4.0.postman_environment.json` | 
 
 ---
 
@@ -107,31 +107,6 @@ Examples:
 * `Bid Package Stats (Beta)`
 * `Invite Bidders (Beta)`
 * `Bids > Plugs (New)`
-
----
-
-## 🆕 What is New in BuildingConnected API v1.4.0 (Public Beta release 2)
-
-| Capability | Where in this collection |
-| ---------- | ------------------------ |
-| **Bid Plugs API** | `Bids > Plugs (New)` (6) and `Bid Packages > Bid Leveling (New)` |
-| **Bid Highlights API** | `Bids > Highlights (New)` (6) |
-| **Bid Notes API** | `Bids > Notes (New)` (6) |
-| **Bid Leveling Settings API** | `Bid Packages > Bid Leveling (New)` (GET + PATCH) |
-| **Other Cost Questions API** | `Bid Packages > Other Cost Questions (New)` (4) |
-| **Other Cost Responses API** | `Bid Packages > Other Cost Responses (New)` (5) |
-| **Bid Package Unsealing** | `Projects > Sealed Bidding (New)` |
-| **Clear ACC Docs folder association** | `Projects > BC Projects`, `Bid Packages` |
-| **Multi-value filtering** | 7 list operations; noted in each description |
-| **ACC-linked project visibility for bid forms** | `Project Bid Forms`, `Scope-Specific Bid Forms` |
-
-Notes and limits captured in the request descriptions:
-
-* Other-cost questions are capped at **200 per bid package**, so the list endpoint is not paginated.
-* `PUT .../other-cost-questions` **replaces the entire list**; omitted questions (and any responses referencing them) are deleted. Send `id` to update an existing question, omit it to create one.
-* Deleting a question also deletes every other-cost response that references it.
-* **Unsealing is one-way** and cannot be undone. It applies only to bid packages in a project with sealed bidding already enabled, and only after that bid package's due date has passed. Send either `{"bidPackageIds": [...]}` (max 100) or `{"unsealAll": true}` — never both.
-* `bid-packages/{id}/plugs|highlights|notes` paginate over bids (default 100), with each bid capped at 100 child records; use the per-bid list endpoints to page through the remainder.
 
 ---
 
