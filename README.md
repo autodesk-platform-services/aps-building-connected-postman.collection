@@ -43,7 +43,6 @@ All endpoints follow a consistent naming convention using:
 | | Count |
 | --- | --- |
 | Documented API Reference operations | **155** |
-| Operations covered by this collection | **155 (100%)** |
 | Extra request preserved for backward compatibility (not in the current API Reference) | 1 |
 | **Total requests** | **156** |
 | Requests with a full description (endpoint, auth, scopes, headers, params, body schema, status codes) | 156 |
@@ -193,65 +192,6 @@ Notes and limits captured in the request descriptions:
 * Deleting a question also deletes every other-cost response that references it.
 * **Unsealing is one-way** and cannot be undone. It applies only to bid packages in a project with sealed bidding already enabled, and only after that bid package's due date has passed. Send either `{"bidPackageIds": [...]}` (max 100) or `{"unsealAll": true}` — never both.
 * `bid-packages/{id}/plugs|highlights|notes` paginate over bids (default 100), with each bid capped at 100 child records; use the per-bid list endpoints to page through the remainder.
-
----
-
-## 📄 Pagination
-
-List operations are cursor-paginated. Send `limit` (default 100; TradeTapp defaults to 20) and `cursorState`. Responses carry a `pagination` object with `limit`, `cursorState` and `nextUrl`; when `cursorState` is absent there are no further pages. `cursorState` is present on **all 41 documented paginated operations** in this collection.
-
----
-
-## 🔍 Flexible Filtering
-
-* **Multi-value filters.** Filters typed `array: string` accept a comma-separated list:
-
-  ```
-  ?filter[projectId]=590dd127b319f408f190b3b8,590dd127b319f408f190b3b9
-  ```
-
-  Passing a single ID behaves exactly as before, so this is additive and **not** a breaking change. Applies to `filter[projectId]`, `filter[bidPackageId]`, `filter[state]`, `filter[action]`, `filter[bidderCompanyId]`, `filter[owningOfficeId]` and `filter[questionId]` on the operations that document them. Each request description flags which of its filters accept a list.
-
-* **Date/time ranges.** `filter[updatedAt]` (and TradeTapp's `filter[createdAt]`, `filter[eventDate]`) accept a single ISO-8601 instant `YYYY-MM-DDThh:mm:ss.SSSZ` or a range `A..B`. Ranges may be open in either direction (`A..` or `..B`). Lower bound inclusive, upper bound exclusive.
-
-* **`includeExternal`.** Includes resources owned by external companies. It may only be combined with the specific filters listed on each operation — typically `filter[projectId]`, `filter[bidPackageId]`, `filter[userId]` or `filter[currentAccLinkedProjectId]`.
-
----
-
-## 🔗 ACC / Docs Folder Functionality
-
-`currentAccDocsFolderId` identifies the Autodesk Construction Cloud (ACC) Data Management folder linked to a project or bid package; files placed there are shared with all bidders. As of v1.4.0 it **can be cleared directly by sending `null`**, independently of `currentAccLinkedProjectId`. The three endpoints that support this are included, with the field present in their request bodies:
-
-* `PATCH /construction/buildingconnected/v3/projects/{projectId}` — `Projects > BC Projects`
-* `PATCH /construction/buildingconnected/v2/bid-packages:batch-patch` — `Bid Packages`
-* `PATCH /construction/buildingconnected/v2/bid-packages/{bidPackageId}` — `Bid Packages`
-
-Related ACC fields also covered: `currentAccLinkedProjectId`, `currentAccLinkedHubId`, `accProjectLinkedAt`, and `filter[currentAccLinkedProjectId]` on every list operation that supports it.
-
----
-
-## 📝 Notes
-
-* Ensure all required IDs (e.g., `projectId`, `bidId`, `formId`, `bidPackageId`) are provided
-* Batch endpoints use request payloads for bulk operations
-* Some endpoints return **signed URLs** for secure file downloads
-* Deprecated v2 operations are retained in `Deprecated (v2)` sub-folders; prefer the v3 equivalents
-
-### Accuracy notes and fixes applied
-
-1. **`PATCH projects/{projectId}/costs:batch-create` corrected to `costs:batch-patch`** — *Batch Update Project Cost Items* previously pointed at the batch-**create** URI, so it could never have performed a batch update.
-2. **`cursorState` added to all 41 documented paginated operations.**
-3. **`filter[currentAccLinkedProjectId]` and `includeExternal`** added to `GET /project-bid-forms` and `GET /scope-specific-bid-forms`.
-4. **`"color": 20` corrected to `"color": "YELLOW"`** in the bid-highlight create/update bodies. The API Reference example uses a number; `color` is an enum string (`RED`/`YELLOW`/`GREEN`/`BLUE`/`PURPLE`).
-5. **`bid-packages:unseal` body filled in.** The API Reference shows `{}` and an unresolved `oneOf`; the field names come from its own prose (`unsealAll` / `bidPackageIds`).
-6. **Other-cost-question examples given real values** instead of the reference's empty-string placeholders, shaped to demonstrate update-vs-create semantics.
-7. **Documentation defects flagged rather than copied** — the reference's URI-parameter tables for `DELETE /invite-notes/{noteId}`, `GET /v2/project-team-members/{memberId}` and `GET /offices/{officeId}/primary-contacts` are duplicated, wrong or missing. Path variables here are derived from the documented URI, and the discrepancy is noted in each description.
-
-### Known gaps (limits of the source documentation)
-
-* **`Invites - Invite Bidders (Beta)`** (`POST /invites:invite-bidders`) is **not in the current API Reference**. It is included unchanged so that no existing functionality is lost, and is labelled in its description. The reference documents `POST /invites:batch-invite-bidders` plus the deprecated `invites:import-emails` and `invites:batch-import-emails` (all three are included). Prefer `invites:batch-invite-bidders`.
-* **`POST /v3/projects`** has no request or response example in the API Reference. A request body is provided; no saved example response could be added.
-* The `oneOf` sub-schemas the reference renders as unlabeled `0` / `1` rows (project `location`, project-cost `calculation`, bid line-item `value`, unseal body) are described in prose in each request description; request examples use the concrete variant the reference itself demonstrates.
 
 ---
 
