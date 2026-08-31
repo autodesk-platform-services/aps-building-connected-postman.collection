@@ -1,6 +1,13 @@
-# Building Connected API Postman Collection
+# Building Connected APIs — Complete Postman Collection v1.4.0
 
-This repository contains a comprehensive Postman collection for interacting with the BuildingConnected APIs. It is organized in a clean, consistent, and scalable structure to support development, testing, and integration workflows.
+This repository contains a comprehensive Postman collection for the **BuildingConnected** and **TradeTapp** APIs. It is organized in a clean, consistent, and scalable structure to support development, testing, and integration workflows, and it is built from and verified against every operation in the published API Reference:
+
+<https://aps.autodesk.com/en/docs/buildingconnected/v2/reference/http/>
+
+| File | Purpose |
+| ---- | ------- |
+| `Building Connected APIs v1.4.0.postman_collection.json` | The collection (156 requests) |
+| `Building Connected Environment v1.4.0.postman_environment.json` | Environment with every variable the collection references |
 
 ---
 
@@ -8,17 +15,20 @@ This repository contains a comprehensive Postman collection for interacting with
 
 The collection includes endpoints for managing:
 
-* Bids
+* Bids — plus Plugs, Highlights and Notes
+* Bid Packages — plus Bid Leveling, Other Cost Questions and Other Cost Responses
+* Bid Package Event History & Bid Package Stats
 * Bidding Stats
-* Contacts & Certificates
+* Contacts & Certification
 * Invites & Invite Notes
-* Offices & Preferred Contacts
-* Opportunities
-* Projects & NDAs
+* Offices, Preferred Contacts & Primary Contacts
+* Opportunities & Opportunity-Project Pairs
+* Projects, NDAs, Cost Items & Sealed Bidding
 * Project Bid Forms
 * Scope-Specific Bid Forms
 * Project Team Members
 * Users
+* TradeTapp — Users, Financials, Qualifications & Flags
 
 All endpoints follow a consistent naming convention using:
 
@@ -28,6 +38,20 @@ All endpoints follow a consistent naming convention using:
 * **Delete / Remove** – Delete or detach resources
 * **Batch** – Bulk operations
 
+### Coverage
+
+| | Count |
+| --- | --- |
+| Documented API Reference operations | **155** |
+| Operations covered by this collection | **155 (100%)** |
+| Extra request preserved for backward compatibility (not in the current API Reference) | 1 |
+| **Total requests** | **156** |
+| Requests with a full description (endpoint, auth, scopes, headers, params, body schema, status codes) | 156 |
+| Requests with a saved example response | 154 |
+
+Breakdown by base path: 135 x `buildingconnected/v2`, 8 x `buildingconnected/v3`, 13 x `tradetapp/v2`.
+Methods: 71 GET, 39 POST, 24 PATCH, 21 DELETE, 1 PUT.
+
 ---
 
 ## 🚀 Getting Started
@@ -36,44 +60,81 @@ All endpoints follow a consistent naming convention using:
 
 * Open Postman
 * Click **Import**
-* Select the exported collection file from this repository
+* Drag in both JSON files from this repository (collection + environment)
 
-### 2. Set Up Environment Variables
+### 2. Select the Environment
 
-Create a Postman environment and configure the following variables:
+Select the `Building Connected Environment v1.4.0` environment, then configure the following variables:
 
-| Variable            | Description                  |
-| --------------------| ---------------------------- |      
-| `APS_CLIENT_ID`     | Your APS Client Id           |
-| `APS_CLIENT_SECRET` | Your APS Client Secret       |
-| `Access_Token`         | Authorization token (Bearer) |
+| Variable | Description |
+| -------- | ----------- |
+| `APS_CLIENT_ID` | Your APS app client ID |
+| `APS_CLIENT_SECRET` | Your APS app client secret |
+| `Access_Token` | Three-legged bearer token (used by every request) |
+| `inviteId`, `inviteId1`, `inviteId2` | Used by the invite-note request bodies |
 
 ### 3. Authentication
 
-Most endpoints require authentication. Add the following header:
+Every operation requires a **three-legged (user context)** access token, obtained via the OAuth Authorization Code flow or a Secure Service Account (SSA) flow. Each request sends:
 
 ```
-Authorization: Bearer {{authToken}}
+Authorization: Bearer {{Access_Token}}
 ```
+
+Scopes: `data:read` for reads, `data:write` for create/update/delete, and `data:create` for `POST /construction/tradetapp/v2/flags`. Requests with a body also send `Content-Type: application/json`.
+
+TradeTapp requests include an optional, pre-disabled `general-contractor-company-id` header. Enable it only if the calling user belongs to a parent enterprise company in TradeTapp.
+
+### 4. Send a Request
+
+* Fill in path variables per request via the **Path Variables** table (e.g. `bidPackageId`)
+* Query parameters ship **disabled** — enable only the ones you need
 
 ---
 
 ## 📂 Collection Structure
 
-The collection is organized into the following folders:
+The collection is organized into the following folders, each containing logically grouped endpoints for better navigation and usability:
 
-* **Bids**
-* **Contacts**
-* **Invites**
-* **Offices**
-* **Opportunities**
-* **Projects**
-* **Project Bid Forms**
-* **Scope-Specific Bid Forms**
-* **Project Team Members**
-* **Users**
-
-Each folder contains logically grouped endpoints for better navigation and usability.
+```
+Bid Package Event History (Beta)      1
+Bid Package Stats (Beta)              2
+Bid Packages                          8
+  Bid Leveling (New)                  5
+  Other Cost Questions (New)          4
+  Other Cost Responses (New)          5
+Bidding Stats (Beta)                  2
+Bids                                  8
+  Plugs (New)                         6
+  Highlights (New)                    6
+  Notes (New)                         6
+Contacts                              3
+Certification                         2
+Invites                              14
+Offices                               2
+Opportunity-Project Pairs             4
+Opportunities                         7
+Preferred Contacts (Beta)             1
+Primary Contacts (Beta)               1
+Project Bid Forms                    11
+Project Team Members                  6
+  Deprecated (v2)                     4
+Projects
+  NDA                                 4
+  Cost Items                          7
+  BC Projects                         5
+  BC Projects - Deprecated (v2)       4
+  Sealed Bidding (New)                1
+Scope-Specific Bid Forms             11
+Users                                 3
+TradeTapp APIs
+  Users                               1
+  Financials                          2
+  Qualifications                      4
+  Flags                               6
+                                   ----
+                                    156
+```
 
 ---
 
@@ -98,21 +159,99 @@ Example:
 
 ---
 
-## 🧪 Beta Endpoints
+## 🧪 Beta and New Endpoints
 
-Some endpoints may be marked as **(Beta)** or introduced as part of a **new** release.
+Endpoints are labelled **(Beta)** where the API itself is in beta, and **(New)** where they were introduced in this release.
 
-Example:
+Examples:
 
+* `Bid Package Stats (Beta)`
 * `Invite Bidders (Beta)`
+* `Bids > Plugs (New)`
+
+---
+
+## 🆕 What is New in BuildingConnected API v1.4.0 (Public Beta release 2)
+
+| Capability | Where in this collection |
+| ---------- | ------------------------ |
+| **Bid Plugs API** | `Bids > Plugs (New)` (6) and `Bid Packages > Bid Leveling (New)` |
+| **Bid Highlights API** | `Bids > Highlights (New)` (6) |
+| **Bid Notes API** | `Bids > Notes (New)` (6) |
+| **Bid Leveling Settings API** | `Bid Packages > Bid Leveling (New)` (GET + PATCH) |
+| **Other Cost Questions API** | `Bid Packages > Other Cost Questions (New)` (4) |
+| **Other Cost Responses API** | `Bid Packages > Other Cost Responses (New)` (5) |
+| **Bid Package Unsealing** | `Projects > Sealed Bidding (New)` |
+| **Clear ACC Docs folder association** | `Projects > BC Projects`, `Bid Packages` |
+| **Multi-value filtering** | 7 list operations; noted in each description |
+| **ACC-linked project visibility for bid forms** | `Project Bid Forms`, `Scope-Specific Bid Forms` |
+
+Notes and limits captured in the request descriptions:
+
+* Other-cost questions are capped at **200 per bid package**, so the list endpoint is not paginated.
+* `PUT .../other-cost-questions` **replaces the entire list**; omitted questions (and any responses referencing them) are deleted. Send `id` to update an existing question, omit it to create one.
+* Deleting a question also deletes every other-cost response that references it.
+* **Unsealing is one-way** and cannot be undone. It applies only to bid packages in a project with sealed bidding already enabled, and only after that bid package's due date has passed. Send either `{"bidPackageIds": [...]}` (max 100) or `{"unsealAll": true}` — never both.
+* `bid-packages/{id}/plugs|highlights|notes` paginate over bids (default 100), with each bid capped at 100 child records; use the per-bid list endpoints to page through the remainder.
+
+---
+
+## 📄 Pagination
+
+List operations are cursor-paginated. Send `limit` (default 100; TradeTapp defaults to 20) and `cursorState`. Responses carry a `pagination` object with `limit`, `cursorState` and `nextUrl`; when `cursorState` is absent there are no further pages. `cursorState` is present on **all 41 documented paginated operations** in this collection.
+
+---
+
+## 🔍 Flexible Filtering
+
+* **Multi-value filters.** Filters typed `array: string` accept a comma-separated list:
+
+  ```
+  ?filter[projectId]=590dd127b319f408f190b3b8,590dd127b319f408f190b3b9
+  ```
+
+  Passing a single ID behaves exactly as before, so this is additive and **not** a breaking change. Applies to `filter[projectId]`, `filter[bidPackageId]`, `filter[state]`, `filter[action]`, `filter[bidderCompanyId]`, `filter[owningOfficeId]` and `filter[questionId]` on the operations that document them. Each request description flags which of its filters accept a list.
+
+* **Date/time ranges.** `filter[updatedAt]` (and TradeTapp's `filter[createdAt]`, `filter[eventDate]`) accept a single ISO-8601 instant `YYYY-MM-DDThh:mm:ss.SSSZ` or a range `A..B`. Ranges may be open in either direction (`A..` or `..B`). Lower bound inclusive, upper bound exclusive.
+
+* **`includeExternal`.** Includes resources owned by external companies. It may only be combined with the specific filters listed on each operation — typically `filter[projectId]`, `filter[bidPackageId]`, `filter[userId]` or `filter[currentAccLinkedProjectId]`.
+
+---
+
+## 🔗 ACC / Docs Folder Functionality
+
+`currentAccDocsFolderId` identifies the Autodesk Construction Cloud (ACC) Data Management folder linked to a project or bid package; files placed there are shared with all bidders. As of v1.4.0 it **can be cleared directly by sending `null`**, independently of `currentAccLinkedProjectId`. The three endpoints that support this are included, with the field present in their request bodies:
+
+* `PATCH /construction/buildingconnected/v3/projects/{projectId}` — `Projects > BC Projects`
+* `PATCH /construction/buildingconnected/v2/bid-packages:batch-patch` — `Bid Packages`
+* `PATCH /construction/buildingconnected/v2/bid-packages/{bidPackageId}` — `Bid Packages`
+
+Related ACC fields also covered: `currentAccLinkedProjectId`, `currentAccLinkedHubId`, `accProjectLinkedAt`, and `filter[currentAccLinkedProjectId]` on every list operation that supports it.
 
 ---
 
 ## 📝 Notes
 
-* Ensure all required IDs (e.g., `projectId`, `bidId`, `formId`) are provided
+* Ensure all required IDs (e.g., `projectId`, `bidId`, `formId`, `bidPackageId`) are provided
 * Batch endpoints use request payloads for bulk operations
 * Some endpoints return **signed URLs** for secure file downloads
+* Deprecated v2 operations are retained in `Deprecated (v2)` sub-folders; prefer the v3 equivalents
+
+### Accuracy notes and fixes applied
+
+1. **`PATCH projects/{projectId}/costs:batch-create` corrected to `costs:batch-patch`** — *Batch Update Project Cost Items* previously pointed at the batch-**create** URI, so it could never have performed a batch update.
+2. **`cursorState` added to all 41 documented paginated operations.**
+3. **`filter[currentAccLinkedProjectId]` and `includeExternal`** added to `GET /project-bid-forms` and `GET /scope-specific-bid-forms`.
+4. **`"color": 20` corrected to `"color": "YELLOW"`** in the bid-highlight create/update bodies. The API Reference example uses a number; `color` is an enum string (`RED`/`YELLOW`/`GREEN`/`BLUE`/`PURPLE`).
+5. **`bid-packages:unseal` body filled in.** The API Reference shows `{}` and an unresolved `oneOf`; the field names come from its own prose (`unsealAll` / `bidPackageIds`).
+6. **Other-cost-question examples given real values** instead of the reference's empty-string placeholders, shaped to demonstrate update-vs-create semantics.
+7. **Documentation defects flagged rather than copied** — the reference's URI-parameter tables for `DELETE /invite-notes/{noteId}`, `GET /v2/project-team-members/{memberId}` and `GET /offices/{officeId}/primary-contacts` are duplicated, wrong or missing. Path variables here are derived from the documented URI, and the discrepancy is noted in each description.
+
+### Known gaps (limits of the source documentation)
+
+* **`Invites - Invite Bidders (Beta)`** (`POST /invites:invite-bidders`) is **not in the current API Reference**. It is included unchanged so that no existing functionality is lost, and is labelled in its description. The reference documents `POST /invites:batch-invite-bidders` plus the deprecated `invites:import-emails` and `invites:batch-import-emails` (all three are included). Prefer `invites:batch-invite-bidders`.
+* **`POST /v3/projects`** has no request or response example in the API Reference. A request body is provided; no saved example response could be added.
+* The `oneOf` sub-schemas the reference renders as unlabeled `0` / `1` rows (project `location`, project-cost `calculation`, bid line-item `value`, unseal body) are described in prose in each request description; request examples use the concrete variant the reference itself demonstrates.
 
 ---
 
@@ -127,11 +266,15 @@ Feel free to:
 ---
 
 ## License
+
 This sample is licensed under the terms of the MIT License. Please see the LICENSE file for full details.
 
 ## Written by
+
 Naveen Kumar Thalaivirichan, Developer Advocate and Support
 
 ---
 
 Happy Testing! 🚀
+</content>
+</invoke>
