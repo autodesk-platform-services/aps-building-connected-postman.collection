@@ -1,8 +1,6 @@
 # Building Connected APIs — Complete Postman Collection v1.4.0
 
-This repository contains a comprehensive Postman collection for the **BuildingConnected** and **TradeTapp** APIs. It is organized in a clean, consistent, and scalable structure to support development, testing, and integration workflows, and it is built from and verified against every operation in the published API Reference:
-
-<https://aps.autodesk.com/en/docs/buildingconnected/v2/reference/http/>
+This repository contains a comprehensive Postman collection for the **BuildingConnected** and **TradeTapp** APIs. It is organized in a clean, consistent, and scalable structure to support development, testing, and integration workflows, and it is built from and verified against every operation in the published API Reference: https://aps.autodesk.com/en/docs/buildingconnected/v2/reference/http/>
 
 | File |
 | ---- | 
