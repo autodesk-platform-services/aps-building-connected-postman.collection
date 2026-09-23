@@ -54,7 +54,7 @@ All endpoints follow one of two naming patterns carried over from earlier releas
 <a id="migration-note"></a>
 ## 🔀 Migration Note (v2 → v3)
 
-`Projects` and `Project Team Members` exist in both v2 (**deprecated, scheduled for removal on 24 September 2026**) and v3. The deprecated v2 operations stay grouped in the `Deprecated (v2)` and `BC Projects - Deprecated (v2)` folders so they remain runnable until removal. Behavioural differences in v3:
+`Projects` and `Project Team Members` exist in both v2 and v3. The deprecated v2 operations stay grouped in the `Deprecated (v2)` and `BC Projects - Deprecated (v2)` folders so they remain runnable until removal. Behavioural differences in v3:
 
 * `projectSize` is returned in the unit given by `projectSizeUnits` instead of always square feet.
 * `bidFormId` is a new nullable field on project responses.
