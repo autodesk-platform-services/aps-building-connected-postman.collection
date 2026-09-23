@@ -1,4 +1,4 @@
-# Building Connected APIs — Complete (v1.5.0)
+# Building Connected APIs (v1.5.0)
 
 A complete Postman collection for the **BuildingConnected API**, generated from and verified against every operation in the published API Reference: https://aps.autodesk.com/en/docs/buildingconnected/v2/reference/http/
 
