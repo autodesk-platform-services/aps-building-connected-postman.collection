@@ -1,8 +1,8 @@
-# Building Connected APIs (v1.5.0)
+# Building Connected APIs (v1.6.0)
 
 A complete Postman collection for the **BuildingConnected API**, generated from and verified against every operation in the published API Reference: https://aps.autodesk.com/en/docs/buildingconnected/v2/reference/http/
 
-This collection supersedes `Building Connected APIs v1.4.0.postman_collection.json`, which is left unchanged. It preserves that collection's folder structure, request names, request bodies and `Authorization: Bearer {{Access_Token}}` header convention, and refreshes every operation, query parameter, request-body schema and response example against the BuildingConnected API **v1.5.0** reference (released 8 September 2026).
+Every operation, query parameter, request-body schema and response example in this collection reflects the BuildingConnected API **v1.6.0** reference (released 15 October 2026). Requests use the `Authorization: Bearer {{Access_Token}}` header convention.
 
 ---
 
@@ -13,20 +13,20 @@ The collection includes endpoints for managing:
 
 * Bids — plus Plugs, Highlights and Notes
 * Bid Packages — plus Bid Leveling, Other Cost Questions and Other Cost Responses
-* Bid Package Organizational Attributes *(new in v1.5.0)*
+* Bid Package Organizational Attributes
 * Bid Package Event History & Bid Package Stats
 * Bidding Stats
 * Contacts & Certification
 * Invites & Invite Notes
 * Offices, Preferred Contacts & Primary Contacts
-* Opportunities & Opportunity-Project Pairs
+* Opportunities, Opportunity NDAs *(new in v1.6.0)* & Opportunity-Project Pairs
 * Projects, NDAs, Cost Items & Sealed Bidding
 * Project Bid Forms
 * Scope-Specific Bid Forms
 * Project Team Members
 * Users
 
-All endpoints follow one of two naming patterns carried over from earlier releases — see [⚙️ Naming Conventions](#naming-conventions) — built from a consistent set of verbs:
+All endpoints follow one of two naming patterns — see [⚙️ Naming Conventions](#naming-conventions) — built from a consistent set of verbs:
 
 * **Get** – Retrieve resources
 * **Create** – Create new resources
@@ -37,24 +37,30 @@ All endpoints follow one of two naming patterns carried over from earlier releas
 ---
 
 <a id="whats-new"></a>
-## 🆕 What's New in v1.5.0 (8 September 2026)
+## 🆕 What's New in v1.6.0 (15 October 2026)
 
-* **Bid Package Organizational Attributes API** — new folder `Bid Package Organizational Attributes (New)`. Maps a bid package to a classification or location tree (up to 5 classification mappings and 1 location mapping per bid package).
-* **Batch retrieval by ID** — `POST /bid-packages:batch-get` (`Bid Packages`) and `POST /projects:batch-get` (`Projects ▸ BC Projects`). Both return `207 Multi-Status` with a partial `results` array plus an `errors` array when some IDs cannot be resolved.
-* **Bid leveling** — `POST /bids/{bidId}/apply-previous-plugs` copies plugs, highlights and notes from an earlier revision (replacing all existing ones), and `GET`/`PATCH /bid-packages/{bidPackageId}/line-item-toggle-states` read and write the toggle states used when levelling a bid package.
-* **Private bid attachments** — `POST /bids/{bidId}/private-attachments` and `DELETE /bids/{bidId}/private-attachments/{attachmentId}`. Private attachments are visible to project owners only, not to the bidder. `GET /bids` and `GET /bids/{bidId}` gained the `includePrivateAttachments` query parameter that surfaces the `privateAttachments` field.
-* **Quarantine-aware v3 file contracts** — `GET /v3/bids/{bidId}/attachments/{attachmentId}` and `GET /v3/projects/{projectId}/nda` return `200 OK` with `signedUrl: null` and `fileStatus: QUARANTINED` when Autodesk OSS has quarantined a file after malware scanning. The matching v2 operations keep the previous contract and still return an error for those files.
-* **Projects** — new `filter[createdBy]` and `filter[isTemplate]` query parameters on `GET /projects` (v2 and v3); new `aiProposalExtraction` request/response field on `POST /projects` and `PATCH /projects/{projectId}` (v2 and v3); new `isBidFormTemplate` response field.
-* **Invites** — new `searchText` and `filter[createdAt]` query parameters on `GET /invites`.
+* **Opportunity NDAs** — new folder `Opportunities ▸ NDA (New)`:
+  * `Get Opportunity NDA` — `GET /opportunities/{opportunityId}/nda` returns the NDA document the GC attached to the opportunity, as a signed download URL that expires after 2 minutes.
+  * `Sign Opportunity NDA` — `POST /opportunities/{opportunityId}/nda:sign` records the current user's signature; no document upload is needed. A user who isn't yet a member of the opportunity is added as a `FOLLOWER`, and signing twice returns `409 Conflict`.
+  * Neither endpoint needs a Bid Board Pro subscription. Walkthrough: [Manage Opportunity NDAs](https://aps.autodesk.com/en/docs/buildingconnected/v2/tutorials/manage-opportunity-ndas/).
+* **NDA-gated access** — until the current user signs a required NDA (`isNdaRequired: true`):
+  * `GET /opportunities/{opportunityId}` returns limited opportunity details — see the new `200 OK — Limited details (NDA not signed)` example on `Get Opportunity by ID`.
+  * `PATCH /opportunities/{opportunityId}`, `GET /opportunities/{opportunityId}/comments`, `GET /opportunities/{opportunityId}/comments/{commentId}`, `POST /opportunity-project-pairs` and `PATCH /opportunity-project-pairs/{opportunityProjectPairId}` return `403 Forbidden`.
+* **`members[].ndaSignedAt`** — `GET /opportunities`, `GET /opportunities/{opportunityId}`, `POST /opportunities` and `PATCH /opportunities/{opportunityId}` now return when each member signed the NDA (`null` if they haven't). The saved example responses are refreshed to match.
+* **Deleted opportunities** — `GET /opportunity-project-pairs` now leaves out pairs whose opportunity was deleted, and `GET` / `PATCH /opportunity-project-pairs/{opportunityProjectPairId}` return `404 Not Found` for them.
 
-> New and changed requests are labelled **(New)** or **(New - Beta)** in the collection so they're easy to spot alongside the existing operations.
+> Requests whose behaviour changed in v1.6.0 carry a **Changed in v1.6.0** note at the top of their description.
+
+The refresh against the current reference also picked up one wording update that isn't an API change: `Certificates - Get Types` now lists certificate types supported by BuildingConnected **and TradeTapp**.
+
+> New requests and folders are labelled **(New)** or **(New - Beta)** in the collection so they're easy to spot alongside the existing operations. Full release history: [BuildingConnected changelog](https://aps.autodesk.com/en/docs/buildingconnected/v2/change_history/buildingconnected_v2_changelog/).
 
 ---
 
 <a id="migration-note"></a>
 ## 🔀 Migration Note (v2 → v3)
 
-`Projects` and `Project Team Members` exist in both v2 and v3. The deprecated v2 operations stay grouped in the `Deprecated (v2)` and `BC Projects - Deprecated (v2)` folders so they remain runnable until removal. Behavioural differences in v3:
+`Projects` and `Project Team Members` exist in both v2 and v3. As of the v1.6.0 reference the v2 operations are still published, marked "deprecated and will be removed in a future version", so they stay grouped in the `Deprecated (v2)` and `BC Projects - Deprecated (v2)` folders and remain runnable until removal. Behavioural differences in v3:
 
 * `projectSize` is returned in the unit given by `projectSizeUnits` instead of always square feet.
 * `bidFormId` is a new nullable field on project responses.
@@ -79,11 +85,11 @@ See the full guide: https://aps.autodesk.com/en/docs/buildingconnected/v2/develo
 
 * Open Postman
 * Click **Import**
-* Drag in both JSON files from this repository (collection + environment)
+* Drag in the two v1.6.0 JSON files from the `Postman Collection` folder: `Building Connected APIs v1.6.0.postman_collection.json` and `Building Connected Environment v1.6.0.postman_environment.json`
 
 ### 2. Select the Environment
 
-Select the `Building Connected Environment v1.5.0` environment, then fill in the variables you need — see [🔑 Environment Variables](#environment-variables) for the full reference.
+Select the `Building Connected Environment v1.6.0` environment, then fill in the variables you need — see [🔑 Environment Variables](#environment-variables) for the full reference.
 
 > Request bodies carry **no hard-coded IDs** — every account, project, bid package, office, user or resource ID in a payload is a reusable variable named after the field it fills (e.g. `{{projectId}}`, `{{bidPackageId}}`). Fill them in once in the environment and every request picks them up.
 
@@ -118,7 +124,7 @@ Scopes: `data:read` for reads and `data:write` for create/update/delete. Request
 | `Access_Token` | Three-legged bearer token, sent as `Authorization: Bearer {{Access_Token}}` on every request. |
 
 <details>
-<summary>Resource ID variables (32) — expand for the full reference</summary>
+<summary>Resource ID variables (33) — expand for the full reference</summary>
 
 **Bid packages, bids & line items**
 
@@ -127,6 +133,7 @@ Scopes: `data:read` for reads and `data:write` for create/update/delete. Request
 | `bidPackageId` | The ID of a bid package. |
 | `templateBidPackageId` | The ID of an existing bid package to clone the form, files and settings from when creating a new one. |
 | `bidAdminUserId` | The BuildingConnected user ID of the bid administrator on a sealed project; only they (or a current administrator) can unseal bids after the due date. |
+| `leadUserId` | The BuildingConnected user ID of a bid package's lead user; opportunities created from the bid package appear to be sent from this user. |
 | `bidderCompanyId` | The ID of a bidder's (subcontractor's) company. |
 | `lineItemId` | The ID of a bid-form or cost line item. |
 | `questionId` | The ID of an Other Cost Question that a response answers. |
@@ -193,7 +200,7 @@ Scopes: `data:read` for reads and `data:write` for create/update/delete. Request
 <a id="naming-conventions"></a>
 ## ⚙️ Naming Conventions
 
-The collection carries forward two request-naming patterns from earlier releases; both remain in active use side by side and neither is being retired in v1.5.0:
+The collection uses two request-naming patterns side by side:
 
 * **`Resource - Action`** — used by `Bid Packages`, `Bids`, `Contacts`, `Certificates`, `Offices` and most of `Invites`.
   Example: `Bid Packages - Create`, `Bid Packages - Get by ID`, `Bid Packages - Update by ID`, `Bid Packages - Delete by ID`, `Bid Packages - Batch Create`.
@@ -215,14 +222,9 @@ If you're scripting against request names (e.g. in a Postman/Newman collection r
 <a id="beta-and-new-endpoints"></a>
 ## 🧪 Beta and New Endpoints
 
-Endpoints are labelled **(Beta)** where the API itself is in beta, and **(New)** / **(New - Beta)** where they were introduced in this release. The `Plugs`, `Highlights`, `Notes`, `Other Cost Questions`, `Other Cost Responses`, `Bid Leveling` and `Sealed Bidding` folders arrived in v1.4.0; the items listed under [🆕 What's New in v1.5.0](#whats-new) above arrived in v1.5.0.
+Endpoints are labelled **(Beta)** where the API itself is in beta, and **(New - Beta)** where the reference uses that label (the v3 operations). **(New)** marks recently added items. New in v1.6.0 is the `Opportunities ▸ NDA (New)` folder (`Get Opportunity NDA`, `Sign Opportunity NDA`).
 
-Examples:
-
-* `Bid Package Organizational Attributes (New)`
-* `Bid Packages - Batch Get (New)`
-* `Bids - Apply Previous Plugs (New)`
-* `Bids - Get Attachment by ID (New - Beta)`
+Existing requests whose behaviour changed in v1.6.0 keep their names, so scripts and collection-runner filters keep working, and carry a **Changed in v1.6.0** note in their description instead.
 
 ---
 
@@ -230,7 +232,7 @@ Examples:
 ## 🗂 Collection Structure
 
 <details>
-<summary>Expand full folder and request tree (31 folders, 155 requests)</summary>
+<summary>Expand full folder and request tree (32 folders, 157 requests)</summary>
 
 ```
 Bid Package Event History (Beta)
@@ -339,6 +341,9 @@ Opportunity-Project Pairs
   Create Opportunity Project Pair
   Update Opportunity Project Pair by ID
 Opportunities
+  NDA (New)
+    Get Opportunity NDA
+    Sign Opportunity NDA
   Get All Opportunities
   Create Opportunity
   Get Opportunity by ID
@@ -431,7 +436,9 @@ Users
 * Path parameters use Postman path variables (`:bidPackageId`) with empty values — fill them in the request's **Path Variables** table.
 * Request bodies carry no hard-coded IDs; every resource ID is a reusable Postman variable declared in the environment. Non-identifying example values (names, dates, amounts, enum values) are kept as documented.
 * Every request carries a description with the operation ID, endpoint, authentication context, required scopes, headers, path/query parameters, request-body schema and HTTP status codes.
-* Every request carries a saved example response taken from the API Reference, with one exception: `Create Project (New - Beta)` currently ships without one, as no example is published for that operation in the reference at time of writing.
+* Every request carries a saved example response taken from the API Reference, with one exception: `Create Project (New - Beta)` currently ships without one, as no example is published for that operation in the reference at time of writing. `Get Opportunity by ID` also carries a second example, `200 OK — Limited details (NDA not signed)`, taken from the [Manage Opportunity NDAs](https://aps.autodesk.com/en/docs/buildingconnected/v2/tutorials/manage-opportunity-ndas/) tutorial.
+* Behaviour changes that the changelog announces but a reference page's own description doesn't yet mention are added as a **Changed in v1.6.0** note at the top of the request description.
+* The `Sign Opportunity NDA` example follows the API Reference, which documents the full opportunity object as the response. The tutorial shows only the caller's `members[]` entry, so check the actual response shape if your code depends on it.
 * Deprecated operations are grouped in `Deprecated (v2)` folders and labelled in their names.
 
 ---
